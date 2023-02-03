@@ -1,0 +1,327 @@
+
+-- -----------------------------------------------------
+-- Schema onlineretailappdb
+-- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `onlineretailappdb` ;
+
+-- -----------------------------------------------------
+-- Schema onlineretailappdb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `onlineretailappdb` DEFAULT CHARACTER SET utf8 ;
+USE `onlineretailappdb` ;
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`Customer`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Customer` ;
+
+CREATE TABLE IF NOT EXISTS `Customer` (
+  `customerID` INT NOT NULL,
+  `customerName` VARCHAR(45) NOT NULL,
+  `customerEmail` VARCHAR(45) NOT NULL,
+  `customerContact` VARCHAR(45) NOT NULL,
+  `customerAddress` VARCHAR(45) NOT NULL,
+  `billings` VARCHAR(45) NOT NULL,
+  `purchaseHistory` VARCHAR(200) NOT NULL,
+  PRIMARY KEY (`customerID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`RetailBranch`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `RetailBranch` ;
+
+CREATE TABLE IF NOT EXISTS `RetailBranch` (
+  `branchid` INT NOT NULL,
+  `RetailBranchName` VARCHAR(45) NOT NULL,
+  `retailBranchLocation` VARCHAR(45) NOT NULL,
+  `retailBranchAddress` VARCHAR(45) NOT NULL,
+  `retalBranchEmail` VARCHAR(45) NOT NULL,
+  `retailBranchContact` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`branchid`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`RetailBranchManagers`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `RetailBranchManagers` ;
+
+CREATE TABLE IF NOT EXISTS `RetailBranchManagers` (
+  `retailBranchMangerID` INT NOT NULL,
+  `branchid` INT NOT NULL,
+  `retailerID` INT NOT NULL,
+  PRIMARY KEY (`retailBranchMangerID`, `branchid`, `retailerID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`Retailers`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Retailers` ;
+
+CREATE TABLE IF NOT EXISTS `Retailers` (
+  `retailerID` INT NOT NULL,
+  `customerID` INT NOT NULL,
+  `UserName` VARCHAR(45) NOT NULL,
+  `passwordLogin` VARCHAR(45) NOT NULL,
+  `retailerRoles` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`retailerID`, `customerID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`cart`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `cart` ;
+
+CREATE TABLE IF NOT EXISTS `cart` (
+  `cartID` INT NOT NULL,
+  `categoryID` INT NOT NULL,
+  `customerID` INT NOT NULL,
+  `productID` INT NOT NULL,
+  `quantity` INT NOT NULL,
+  PRIMARY KEY (`cartID`, `categoryID`, `customerID`, `productID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`category`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `category` ;
+
+CREATE TABLE IF NOT EXISTS `category` (
+  `categoryID` INT NOT NULL,
+  `categoryName` VARCHAR(45) NOT NULL,
+  `orderDetailsID` INT NOT NULL,
+  PRIMARY KEY (`categoryID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`orderDetails`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `orderDetails` ;
+
+CREATE TABLE IF NOT EXISTS `orderDetails` (
+  `orderdetailsID` INT NOT NULL,
+  `orderID` INT NOT NULL,
+  `productID` VARCHAR(45) NOT NULL,
+  `qty` VARCHAR(45) NOT NULL,
+  `retailerRoles` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`orderdetailsID`, `orderID`, `productID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`orders`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `orders` ;
+
+CREATE TABLE IF NOT EXISTS `orders` (
+  `orderID` INT NOT NULL,
+  `customerID` INT NOT NULL,
+  `ordernumber` INT NOT NULL,
+  `totalprice` INT NOT NULL,
+  `paymentmethod` VARCHAR(45) NOT NULL,
+  `deliverymethod` VARCHAR(45) NOT NULL,
+  `orderdate` VARCHAR(45) NOT NULL,
+  `branchid` VARCHAR(45) NOT NULL,
+  `date_of_delivery` DATE NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  `noifications` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`orderID`, `customerID`, `branchid`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`product`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `product` ;
+
+CREATE TABLE IF NOT EXISTS `product` (
+  `productID` INT NOT NULL,
+  `categoryID` INT NOT NULL,
+  `productName` VARCHAR(40) NOT NULL,
+  `description` VARCHAR(50) NULL,
+  `productprice` INT NOT NULL,
+  `image` VARCHAR(45) NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`productID`, `categoryID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`productBranch`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `productbranch` ;
+
+CREATE TABLE IF NOT EXISTS `productbranch` (
+  `productbranchID` INT NOT NULL,
+  `branchID` INT NOT NULL,
+  `quantity` INT NULL,
+  PRIMARY KEY (`productbranchID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `OnlineRetailAppDB`.`retail_application_Settings`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `retail_application_Settings` ;
+
+CREATE TABLE IF NOT EXISTS `retail_application_Settings` (
+  `settingsID` INT NOT NULL,
+  `settingType` VARCHAR(50) NOT NULL,
+  `emailsetting` VARCHAR(45) NOT NULL,
+  `phonesetting` VARCHAR(45) NOT NULL,
+  `facebooksetting` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`settingsID`))
+ENGINE = InnoDB;
+
+--------------------------------------------------------
+-- Adding Foreign Keys
+--------------------------------------------------------
+ALTER TABLE cart
+ADD FOREIGN KEY (categoryID) REFERENCES category(categoryID);
+
+ALTER TABLE cart
+ADD FOREIGN KEY (productID) REFERENCES product(productID);
+
+ALTER TABLE cart
+ADD FOREIGN KEY (customerID) REFERENCES customer(customerID);
+
+ALTER TABLE category
+ADD FOREIGN KEY (orderDetailsID) REFERENCES orderdetails(orderDetailsID);
+
+ALTER TABLE orderdetails
+ADD FOREIGN KEY (orderID) REFERENCES orders(orderID);
+
+ALTER TABLE orders
+ADD FOREIGN KEY (customerID) REFERENCES customer(customerID);
+
+ALTER TABLE product
+ADD FOREIGN KEY (categoryID) REFERENCES category(categoryID);
+
+
+ALTER TABLE productbranch
+ADD FOREIGN KEY (branchID) REFERENCES retailbranch(branchID);
+
+ALTER TABLE retailbranchmanagers
+ADD FOREIGN KEY (branchID) REFERENCES retailbranch(branchID);
+
+ALTER TABLE retailbranchmanagers
+ADD FOREIGN KEY (retailerID) REFERENCES retailers(retailerID);
+
+ALTER TABLE retailers
+ADD FOREIGN KEY (customerID) REFERENCES customer(customerID);
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--Insert Statements
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------
+--1. retail application setting
+------------------------------------------
+insert into retail_application_Settings (settingsID, settingType, emailsetting, phonesetting, facebooksetting) values (1, 'google.co.jp', 'va.gov', 'smugmug.com', 'mysql.com');
+insert into retail_application_Settings (settingsID, settingType, emailsetting, phonesetting, facebooksetting) values (2, 'freewebs.com', 'google.com.hk', 'latimes.com', 'theglobeandmail.com');
+insert into retail_application_Settings (settingsID, settingType, emailsetting, phonesetting, facebooksetting) values (3, 'oracle.com', 'huffingtonpost.com', 'wikimedia.org', 'wired.com');
+insert into retail_application_Settings (settingsID, settingType, emailsetting, phonesetting, facebooksetting) values (4, 'marriott.com', 'opera.com', 'netvibes.com', 'admin.ch');
+insert into retail_application_Settings (settingsID, settingType, emailsetting, phonesetting, facebooksetting) values (5, 'meetup.com', 'prweb.com', 'geocities.jp', 'goo.ne.jp');
+
+
+-------------------------------------------
+--2. productbranch
+------------------------------------------
+insert into productbranch (productbranchID, branchID, quantity) values (1, 10, 327);
+insert into productbranch (productbranchID, branchID, quantity) values (2, 7, 43);
+insert into productbranch (productbranchID, branchID, quantity) values (3, 6, 948);
+insert into productbranch (productbranchID, branchID, quantity) values (4, 9, 207);
+insert into productbranch (productbranchID, branchID, quantity) values (5, 8, 874);
+
+-------------------------------------------
+--3. customer
+------------------------------------------
+
+insert into Customer (customerID, customerName, customerEmail, customerContact, customerAddress, billings, purchaseHistory) values (1, 'Saxe Birkmyre', 'sbirkmyre0@shareasale.com', '118-473-7446', '71 Shasta Parkway', '', '');
+insert into Customer (customerID, customerName, customerEmail, customerContact, customerAddress, billings, purchaseHistory) values (2, 'Lynsey MacLaren', 'lmaclaren1@surveymonkey.com', '743-154-5659', '0029 Norway Maple Lane', '', '');
+insert into Customer (customerID, customerName, customerEmail, customerContact, customerAddress, billings, purchaseHistory) values (3, 'Eryn Manion', 'emanion2@wikia.com', '579-861-3803', '85 Artisan Road', '', '');
+insert into Customer (customerID, customerName, customerEmail, customerContact, customerAddress, billings, purchaseHistory) values (4, 'Rebeca Weldrake', 'rweldrake3@boston.com', '753-213-5621', '7449 Sunfield Alley', '', '');
+insert into Customer (customerID, customerName, customerEmail, customerContact, customerAddress, billings, purchaseHistory) values (5, 'Braden Blackmore', 'bblackmore4@woothemes.com', '198-376-9203', '88445 Gateway Center', '', '');
+
+-------------------------------------------
+--4. orders
+------------------------------------------
+insert into orders (orderID, customerID, ordernumber, totalprice, paymentmethod, deliverymethod, orderdate, branchID, date_of_delivery, status, noifications) values (1, 1, 1, 396, 'jcb', 'Electric Utilities: Central', '5/24/2022', 1, '2022:10:27', 'active', '-1/2');
+insert into orders (orderID, customerID, ordernumber, totalprice, paymentmethod, deliverymethod, orderdate, branchID, date_of_delivery, status, noifications) values (2, 2, 2, 273, 'diners-club-enroute', 'Air Freight/Delivery Services', '11/29/2021', 2, '2022:5:11', 'inactive', 'get');
+insert into orders (orderID, customerID, ordernumber, totalprice, paymentmethod, deliverymethod, orderdate, branchID, date_of_delivery, status, noifications) values (3, 3, 3, 114, 'jcb', 'Oil & Gas Production', '6/10/2022', 3, '2022:8:16', 'active', '00˙Ɩ$-');
+insert into orders (orderID, customerID, ordernumber, totalprice, paymentmethod, deliverymethod, orderdate, branchID, date_of_delivery, status, noifications) values (4, 4, 4, 422, 'visa-electron', 'Biotechnology', '11/18/2022', 4, '2022:6:29', 'Tennessee', 'shipped');
+insert into orders (orderID, customerID, ordernumber, totalprice, paymentmethod, deliverymethod, orderdate, branchID, date_of_delivery, status, noifications) values (5, 5, 5, 141, 'maestro', 'n/a', '8/25/2022', 5, '2022:1:19', 'active', '-1E2');
+
+
+-------------------------------------------
+--5. product
+------------------------------------------
+insert into product (productID, categoryID, productName, description, productprice, image, status) values (1, 1, 1, 'Auto Parts:O.E.M.', 58, 'http://dummyimage.com/222x100.png', 'SMP');
+insert into product (productID, categoryID, productName, description, productprice, image, status) values (2, 2, 2, 'n/a', 163, 'http://dummyimage.com/203x100.png', 'NEE^I');
+insert into product (productID, categoryID, productName, description, productprice, image, status) values (3, 3, 3, 'Finance: Consumer Services', 524, 'http://dummyimage.com/237x100.png', 'ELVT');
+insert into product (productID, categoryID, productName, description, productprice, image, status) values (4, 4, 4, 'Property-Casualty Insurers', 550, 'http://dummyimage.com/149x100.png', 'L');
+insert into product (productID, categoryID, productName, description, productprice, image, status) values (5, 5, 5, 'Life Insurance', 565, 'http://dummyimage.com/242x100.png', 'AEK');
+
+-------------------------------------------
+--6. orderDetails
+------------------------------------------
+insert into orderdetails (orderdetailsID, orderID, productID, qty, retailerRoles) values (6, 6, 6, 330, 'Construction Worker');
+insert into orderdetails (orderdetailsID, orderID, productID, qty, retailerRoles) values (7, 7, 7, 57, 'Construction Worker');
+insert into orderdetails (orderdetailsID, orderID, productID, qty, retailerRoles) values (8, 8, 8, 791, 'Electrician');
+insert into orderdetails (orderdetailsID, orderID, productID, qty, retailerRoles) values (9, 9, 9, 188, 'Engineer');
+insert into orderdetails (orderdetailsID, orderID, productID, qty, retailerRoles) values (10, 10, 12, 959, 'Supervisor');
+
+-------------------------------------------
+--7. retailers
+------------------------------------------
+
+insert into retailers (retailerID, customerID, UserName, passwordLogin, retailerRoles) values (1, 1, 'Rhodie Swetmore', '7DoIrDR6L', 'Engineer');
+insert into retailers (retailerID, customerID, UserName, passwordLogin, retailerRoles) values (2, 2, 'Jobie Gillow', 'siDbBoQ3', 'Construction Worker');
+insert into retailers (retailerID, customerID, UserName, passwordLogin, retailerRoles) values (3, 3, 'Dominic Slatten', '0NHuKLlxffl', 'Construction Expeditor');
+insert into retailers (retailerID, customerID, UserName, passwordLogin, retailerRoles) values (4, 4, 'Conrado Palk', 'AIFOYOkKO', 'Estimator');
+insert into retailers (retailerID, customerID, UserName, passwordLogin, retailerRoles) values (5, 5, 'Ebeneser Phear', '5eTxeSWl', 'Supervisor');
+
+-------------------------------------------
+--8. category
+------------------------------------------
+
+insert into category (categoryID, categoryName, OrderDetailsID) values (1, 'Arabela McGurk', 1);
+insert into category (categoryID, categoryName, OrderDetailsID) values (2, 'Ike Langston', 2);
+insert into category (categoryID, categoryName, OrderDetailsID) values (3, 'Adriena Sander', 3);
+insert into category (categoryID, categoryName, OrderDetailsID) values (4, 'Mellisa Chilles', 4);
+insert into category (categoryID, categoryName, OrderDetailsID) values (5, 'Alexandre Lomen', 5);
+
+-------------------------------------------
+--9. cart
+------------------------------------------
+
+insert into cart (cartID, categoryID, customerID, productID, quantity) values (1, 1, 1, 1, 646);
+insert into cart (cartID, categoryID, customerID, productID, quantity) values (2, 2, 2, 2, 847);
+insert into cart (cartID, categoryID, customerID, productID, quantity) values (3, 3, 3, 3, 213);
+insert into cart (cartID, categoryID, customerID, productID, quantity) values (4, 4, 4, 4, 830);
+insert into cart (cartID, categoryID, customerID, productID, quantity) values (5, 5, 5, 5, 261);
+
+-------------------------------------------
+--10. retailbranch
+------------------------------------------
+
+insert into retailbranch (branchid, RetailBranchName, retailBranchLocation, retailBranchAddress, retalBranchEmail, retailBranchContact) values (1, 'Alligator, american', 'Hotel India', '676 Northland Circle', 'ufould0@bbc.co.uk', '126-375-3068');
+insert into retailbranch (branchid, RetailBranchName, retailBranchLocation, retailBranchAddress, retalBranchEmail, retailBranchContact) values (2, 'Gecko, bent-toed', 'Alfa X-ray Mike', '1977 Magdeline Point', 'vgallone1@netscape.com', '982-543-6651');
+insert into retailbranch (branchid, RetailBranchName, retailBranchLocation, retailBranchAddress, retalBranchEmail, retailBranchContact) values (3, 'Black curlew', 'Lima Yankee', '89889 Jana Park', 'vdoumic2@scribd.com', '942-911-1631');
+insert into retailbranch (branchid, RetailBranchName, retailBranchLocation, retailBranchAddress, retalBranchEmail, retailBranchContact) values (4, 'European stork', 'Foxtrot Papa', '72151 Sage Junction', 'dgeggus3@acquirethisname.com', '314-415-7650');
+insert into retailbranch (branchid, RetailBranchName, retailBranchLocation, retailBranchAddress, retalBranchEmail, retailBranchContact) values (5, 'Beisa oryx', 'Quebec Mike', '03186 Thierer Road', 'gstearne4@linkedin.com', '906-159-9500');
+
+-------------------------------------------
+--11. retailbranchmanager
+------------------------------------------
+insert into retailbranchmanagers (retailBranchMangerID, branchid, retailerID) values (1, 1, 310);
+insert into retailbranchmanagers (retailBranchMangerID, branchid, retailerID) values (2, 2, 495);
+insert into retailbranchmanagers (retailBranchMangerID, branchid, retailerID) values (3, 3, 139);
+insert into retailbranchmanagers (retailBranchMangerID, branchid, retailerID) values (4, 4, 70);
+insert into retailbranchmanagers (retailBranchMangerID, branchid, retailerID) values (5, 5, 20);
+----------------------------------------------
